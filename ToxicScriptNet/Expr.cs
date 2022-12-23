@@ -175,12 +175,12 @@ public class List : Expr
         return Items.Count > 0;
     }
 
-    public Expr? GetHead() {
-        return Items.FirstOrDefault();
+    public Expr GetInit() {
+        return new List(Items.Take(Items.Count - 1).ToList());
     }
 
-    public List<Expr> GetTail() {
-        return Items.Skip(1).ToList();
+    public Expr? GetLast() {
+        return Items.LastOrDefault();
     }
 
     public override int GetHashCode() {

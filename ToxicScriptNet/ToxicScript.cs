@@ -8,52 +8,45 @@ static public class ToxicScript
         return Expr.Parse(input);
     }
 
-    public static Value<T> Eval<T>(Env<Value<T>> env, Expr expr) {
-        // Check if the expression has a value assigned to it
-        var val = env.Lookup(expr);
-        if (val == null) {
-            // If not, check if it is a valid combination
-            if (expr is List && ((List)expr).IsValidCombination()) {
-                // If it is, evaluate the combiner, and apply the parameters
-                List l = (List)expr;
-                return EvalCombination(env, l.GetHead()!, l.GetTail());
-            } else {
-                // No value assigned, and not a valid combination
-                throw new InvalidOperationException("No value assigned to " + expr.ToString());
-            }
-        } else {
-            // Evaluate the assigned value if necessary, and return it
-            if (val is Promise<T>) {
-                Promise<T> p = (Promise<T>)val;
-                return Eval(p.Env, p.Expr);
-            } else {
-                return val;
-            }
+    public static Term<T> Eval<T>(Env<Term<T>> env, Term<T> term) {
+        switch (term) {
+            case Val<T> v: return v;
+            case Var<T> v:
+                var val = env.Lookup(v.Expr);
+                return val == null ? v : val;
+            case Abs<T> f: return f;
+            default:
+                throw new InvalidOperationException("PANIC! Eval encountered a term of invalid type");
         }
     }
 
-    private static Value<T> EvalCombination<T>(Env<Value<T>> env, Expr combiner,
-        List<Expr> prms)
-    {
-        // Evaluate the combiner
-        var comb = Eval(env, combiner);
-        if (comb == null) {
-            throw new InvalidOperationException("Cannot evaluate combiner");
-        } else {
-            switch (comb) {
-                case Promise<T> p:
-                    return EvalCombination(p.Env, p.Expr, prms);
-                case Opaque<T> o:
-                    if (prms.Count == 0) {
-                        return o;
-                    } else {
-                        throw new InvalidOperationException("Too many arguments");
-                    }
-                case Transform<T> tr:
-                    return tr.ApplyTransform(env, prms);
+    public static Term<T> Apply<T>(Env<Term<T>> env, Term<T> t, Expr e) {
+        switch (t) {
+            case Abs<T> f: return (f.ApplyAbs(env, e));
+            default:
+                var v = Eval(env, t);
+                return Apply(env, v, e);
+        }
+    }
+
+    public static Term<T> EvalExpr<T>(Env<Term<T>> env, Expr e) {
+        var v = env.Lookup(e);
+        if (v == null) {
+            switch(e) {
+                case Symbol s: throw new InvalidOperationException("Unassigned variable: " + s.ToString());
                 default:
-                    throw new InvalidOperationException("Cannot evaluate combiner");
+                    List l = (List)e;
+                    var c = l.GetInit();
+                    var p = l.GetLast();
+                    if (c is List && ((List)c).IsValidCombination()) {
+                        var val = EvalExpr(env, c!);
+                        return Apply(env, val, p!);
+                    } else {
+                        return EvalExpr(env, p!);
+                    }
             }
+        } else {
+            return v;
         }
     }
 }

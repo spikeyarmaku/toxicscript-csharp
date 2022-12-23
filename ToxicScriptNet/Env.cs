@@ -6,7 +6,7 @@ public class Env<T> {
     Func<Expr, T?> Mapping = (expr) => default(T);
     Env<T>? Parent;
 
-    private Env() { }
+    protected Env() { }
 
     public void SetMapping(Func<Expr, T?> mapping) {
         Mapping = mapping;

@@ -1,14 +1,14 @@
 namespace ToxicScriptNet;
 
-public abstract class Value<T> {
+public abstract class Term<T> {
     public abstract override string ToString();
 }
 
-public class Transform<T> : Value<T> {
-    public Func<Env<Value<T>>, List<Expr>, Value<T>> ApplyTransform { get; }
+public class Abs<T> : Term<T> {
+    public Func<Env<Term<T>>, Expr, Term<T>> ApplyAbs { get; }
 
-    public Transform(Func<Env<Value<T>>, List<Expr>, Value<T>> transform) {
-        ApplyTransform = transform;
+    public Abs(Func<Env<Term<T>>, Expr, Term<T>> abs) {
+        ApplyAbs = abs;
     }
     
     public override string ToString() {
@@ -16,12 +16,10 @@ public class Transform<T> : Value<T> {
     }
 }
 
-public class Promise<T> : Value<T> {
-    public Env<Value<T>> Env { get; }
+public class Var<T> : Term<T> {
     public Expr Expr { get; }
 
-    public Promise(Env<Value<T>> env, Expr expr) {
-        Env = env;
+    public Var(Expr expr) {
         Expr = expr;
     }
 
@@ -30,10 +28,10 @@ public class Promise<T> : Value<T> {
     }
 }
 
-public class Opaque<T> : Value <T> {
+public class Val<T> : Term <T> {
     public T Data { get; }
 
-    public Opaque(T t) {
+    public Val(T t) {
         Data = t;
     }
 
