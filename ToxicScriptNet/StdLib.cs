@@ -59,10 +59,9 @@ public static class GlobalEnv<T> {
         new Abs<T>((_, name) =>
             new Abs<T>((staticEnv, value) =>
                 new Abs<T>((dynEnv, body) => {
-                    Func<Env<Term<T>>, Term<T>> valuePromise =
-                        (vEnv) => ToxicScript.EvalExpr(vEnv, body);
-                    var newEnv = dynEnv;
-                    dynEnv = dynEnv.Extend(name, valuePromise(dynEnv));
+                    var newEnv = dynEnv.Extend(name, new Var<T>(name));
+                    var newVal = ToxicScript.EvalExpr(newEnv, value);
+                    newEnv = dynEnv.Extend(name, newVal);
                     return ToxicScript.EvalExpr(newEnv, body);
                 })));
 
@@ -117,10 +116,8 @@ public static class GlobalEnv<T> {
             new Abs<T>((env, e2) => {
                 var v1 = ToxicScript.EvalExpr(env, e1);
                 var v2 = ToxicScript.EvalExpr(env, e2);
-                if (v1 is Val<T> && v2 is Val<T>) {
-                    var val1 = ((Val<T>)v1).Data;
-                    var val2 = ((Val<T>)v2).Data;
-                    if (val1!.Equals(val2)) {
+                if (v1 is Val<T> val1 && v2 is Val<T> val2) {
+                    if (val1.Data!.Equals(val2.Data)) {
                         return TrueV;
                     } else {
                         return FalseV;

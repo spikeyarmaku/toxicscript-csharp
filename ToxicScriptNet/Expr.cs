@@ -147,8 +147,7 @@ public class Symbol : Expr
     }
 
     public override bool Equals(object? o) {
-        if (o is Symbol) {
-            Symbol s = (Symbol)o;
+        if (o is Symbol s) {
             return s.Name == Name;
         } else {
             return false;

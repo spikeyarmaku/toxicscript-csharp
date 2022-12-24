@@ -21,7 +21,14 @@ var env = GlobalEnv<object>.MkGlobalEnv((x) => x, (x) => (float)x, (x) => x.ToSt
 
 var v = ToxicScript.EvalExpr<object>(env, tree);
 Console.WriteLine("Evaluating file:\n\n===\n");
-if (v is Val<object>) {
-    var d = ((Val<object>)v).Data;
-    Console.WriteLine(d.ToString());
+switch (v) {
+    case Val<object> o:
+        Console.WriteLine("Value: " + o.Data.ToString());
+        break;
+    case Var<object> o:
+        Console.WriteLine("Value: " + o.Expr.ToString());
+        break;
+    default:
+        Console.WriteLine("Abstraction");
+        break;
 }

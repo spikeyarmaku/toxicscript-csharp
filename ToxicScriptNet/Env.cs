@@ -25,8 +25,7 @@ public class Env<T> {
     {
         var newEnv = new Env<T>();
         newEnv.Mapping = (e) => {
-            if (e is Symbol) {
-                var s = (Symbol)e;
+            if (e is Symbol s) {
                 float result;
                 if (float.TryParse(s.Name, out result)) {
                     return numToValue(result);

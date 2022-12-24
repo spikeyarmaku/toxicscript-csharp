@@ -1,6 +1,19 @@
-(letrec fact
-    (lambda n
-        (if (= n 1)
-            1
-            (* n (fact (- n 1)))))
-    (fact 5))
+((lambda x (x x)) (lambda x (x x)))
+
+; (let fact_base
+;     (lambda rec
+;         (lambda n
+;             ((= n 1)
+;                 n
+;                 (* n (rec rec (- n 1))))))
+;     (let fact
+;         (lambda n
+;             (fact_base fact_base n))
+;         (fact 5)))
+
+; (letrec fact
+;     (lambda n
+;         ((= n 1)
+;             1
+;             (* n (fact (- n 1)))))
+;     (fact 5))

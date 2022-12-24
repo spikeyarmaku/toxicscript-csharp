@@ -12,7 +12,7 @@ public class Abs<T> : Term<T> {
     }
     
     public override string ToString() {
-        return "<<Transform>>";
+        return "<<Abstraction>>";
     }
 }
 
@@ -24,7 +24,7 @@ public class Var<T> : Term<T> {
     }
 
     public override string ToString() {
-        return "<<Promise:" + Expr.ToString() + ">>";
+        return "<<Variable:" + Expr.ToString() + ">>";
     }
 }
 
@@ -36,6 +36,6 @@ public class Val<T> : Term <T> {
     }
 
     public override string ToString() {
-        return "<<Opaque value: " + typeof(T).Name + ">>";
+        return "<<Value: " + typeof(T).Name + ">>";
     }
 }
