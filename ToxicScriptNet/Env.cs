@@ -25,7 +25,7 @@ public class Env<T> {
     {
         var newEnv = new Env<T>();
         newEnv.Mapping = (e) => {
-            if (e is Symbol s) {
+            if (e is Atom s) {
                 float result;
                 if (float.TryParse(s.Name, out result)) {
                     return numToValue(result);
@@ -55,12 +55,12 @@ public class Env<T> {
     }
 
     public Env<T> Extend(string name, T t) {
-        var nameExpr = new Symbol(name);
+        var nameExpr = new Atom(name);
         return Extend(nameExpr, t);
     }
 
     public Env<T> Extend(string name, Func<Expr, T> namedT) {
-        var nameExpr = new Symbol(name);
+        var nameExpr = new Atom(name);
         var t = namedT(nameExpr);
 
         return Extend(nameExpr, t);

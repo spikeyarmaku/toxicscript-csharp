@@ -56,7 +56,7 @@ public abstract class Expr
                         // End of string
                         inQuotes = false;
                         currentString.Append(c);
-                        currentNode.Add(new Symbol(currentString.ToString()));
+                        currentNode.Add(new Atom(currentString.ToString()));
                         currentString.Clear();
                     } else {
                         currentString.Append(c);
@@ -70,7 +70,7 @@ public abstract class Expr
                 else if (c == '(') {
                     if (currentString.Length > 0)
                     {
-                        currentNode.Add(new Symbol(currentString.ToString()));
+                        currentNode.Add(new Atom(currentString.ToString()));
                         currentString.Clear();
                     }
                     stack.Push(currentNode);
@@ -82,7 +82,7 @@ public abstract class Expr
                     {
                         if (currentString.Length > 0)
                         {
-                            currentNode.Add(new Symbol(currentString.ToString()));
+                            currentNode.Add(new Atom(currentString.ToString()));
                             currentString.Clear();
                         }
                         var parentNode = stack.Pop();
@@ -105,7 +105,7 @@ public abstract class Expr
                 }
                 else if (Char.IsWhiteSpace(c)) {
                     if (currentString.Length > 0) {
-                        currentNode.Add(new Symbol(currentString.ToString()));
+                        currentNode.Add(new Atom(currentString.ToString()));
                         currentString.Clear();
                     }
                 }
@@ -128,11 +128,11 @@ public abstract class Expr
     }
 }
 
-public class Symbol : Expr
+public class Atom : Expr
 {
     public string Name { get; }
 
-    public Symbol(string name)
+    public Atom(string name)
     {
         Name = name;
     }
@@ -147,7 +147,7 @@ public class Symbol : Expr
     }
 
     public override bool Equals(object? o) {
-        if (o is Symbol s) {
+        if (o is Atom s) {
             return s.Name == Name;
         } else {
             return false;

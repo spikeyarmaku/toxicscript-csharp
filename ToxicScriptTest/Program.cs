@@ -16,17 +16,18 @@ var sr = new StreamReader(filename);
 var str = sr.ReadToEnd();
 
 var tree = ToxicScript.Parse(str);
+var treeWithStdLib = GlobalEnv<object>.WithStdlib(tree);
 
 var env = GlobalEnv<object>.MkGlobalEnv((x) => x, (x) => (float)x, (x) => x.ToString());
 
-var v = ToxicScript.EvalExpr<object>(env, tree);
+var v = ToxicScript.EvalExpr<object>(env, treeWithStdLib);
 Console.WriteLine("Evaluating file:\n\n===\n");
 switch (v) {
     case Val<object> o:
         Console.WriteLine("Value: " + o.Data.ToString());
         break;
     case Var<object> o:
-        Console.WriteLine("Value: " + o.Expr.ToString());
+        Console.WriteLine("Var: " + o.Expr.ToString());
         break;
     default:
         Console.WriteLine("Abstraction");

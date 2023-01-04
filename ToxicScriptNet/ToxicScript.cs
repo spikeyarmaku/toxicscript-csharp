@@ -21,28 +21,47 @@ static public class ToxicScript
     }
 
     public static Term<T> Apply<T>(Env<Term<T>> env, Term<T> t, Expr e) {
+        // Console.WriteLine("--- Applying " + t.ToString() + " to " + e.ToString());
         switch (t) {
-            case Abs<T> f: return (f.ApplyAbs(env, e));
+            case Val<T>: throw new InvalidOperationException("Cannot use value as a function");
+            case Abs<T> f:
+                return (f.ApplyAbs(env, e));
             default:
                 var v = Eval(env, t);
-                return Apply(env, v, e);
+                Var<T> var = (Var<T>)t;
+                if (v is Var<T> var2 && var.Expr == var2.Expr) {
+                    throw new InvalidOperationException("Cannot evaluate " + v.ToString());
+                } else {
+                    return Apply(env, v, e);
+                }
         }
     }
 
     public static Term<T> EvalExpr<T>(Env<Term<T>> env, Expr e) {
+        // Console.WriteLine("[INFO] Evaluating: " + e.ToString());
         var v = env.Lookup(e);
         if (v == null) {
+            // Console.WriteLine("No value assigned");
             switch(e) {
-                case Symbol s: throw new InvalidOperationException("Unassigned variable: " + s.ToString());
+                case Atom s: throw new InvalidOperationException("Unassigned variable: " + s.ToString());
                 default:
                     List l = (List)e;
-                    var c = l.GetInit();
-                    var p = l.GetLast();
-                    if (c is List && ((List)c).IsValidCombination()) {
-                        var val = EvalExpr(env, c!);
-                        return Apply(env, val, p!);
+                    if (l.Items.Count == 0) {
+                        // On an empty list, return the empty list as a variable
+                        return new Var<T>(l);
                     } else {
-                        return EvalExpr(env, p!);
+                        // Console.WriteLine("Valid combination");
+                        // The list contains at least one item
+                        var c = l.GetInit();
+                        var p = l.GetLast();
+                        if (c is List cl && cl.Items.Count != 0) {
+                            // Console.WriteLine("Compound expression");
+                            var val = EvalExpr(env, c!);
+                            return Apply(env, val, p!);
+                        } else {
+                            // Console.WriteLine("Single expression");
+                            return EvalExpr(env, p!);
+                        }
                     }
             }
         } else {
