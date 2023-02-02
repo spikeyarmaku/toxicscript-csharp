@@ -59,7 +59,7 @@ public static class GlobalEnv<T> {
         new Abs<T>((env, lst) => {
             var res = ToxicScript.EvalExpr(env, lst);
             switch (res) {
-                case Var<T> v: {
+                case Exp<T> v: {
                     if ((v.Expr is List) && (((List)v.Expr).Items.Count == 0)) {
                             return TrueV!;
                         }

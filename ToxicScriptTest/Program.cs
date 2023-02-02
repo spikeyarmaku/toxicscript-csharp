@@ -26,7 +26,7 @@ switch (v) {
     case Val<object> o:
         Console.WriteLine("Value: " + o.Data.ToString());
         break;
-    case Var<object> o:
+    case Exp<object> o:
         Console.WriteLine("Var: " + o.Expr.ToString());
         break;
     default:

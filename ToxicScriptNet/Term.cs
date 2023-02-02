@@ -16,10 +16,10 @@ public class Abs<T> : Term<T> {
     }
 }
 
-public class Var<T> : Term<T> {
+public class Exp<T> : Term<T> {
     public Expr Expr { get; }
 
-    public Var(Expr expr) {
+    public Exp(Expr expr) {
         Expr = expr;
     }
 

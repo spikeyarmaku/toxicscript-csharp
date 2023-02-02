@@ -11,7 +11,7 @@ static public class ToxicScript
     public static Term<T> Eval<T>(Env<Term<T>> env, Term<T> term) {
         switch (term) {
             case Val<T> v: return v;
-            case Var<T> v:
+            case Exp<T> v:
                 var val = env.Lookup(v.Expr);
                 return val == null ? v : val;
             case Abs<T> f: return f;
@@ -28,8 +28,8 @@ static public class ToxicScript
                 return (f.ApplyAbs(env, e));
             default:
                 var v = Eval(env, t);
-                Var<T> var = (Var<T>)t;
-                if (v is Var<T> var2 && var.Expr == var2.Expr) {
+                Exp<T> var = (Exp<T>)t;
+                if (v is Exp<T> var2 && var.Expr == var2.Expr) {
                     throw new InvalidOperationException("Cannot evaluate " + v.ToString());
                 } else {
                     return Apply(env, v, e);
@@ -48,7 +48,7 @@ static public class ToxicScript
                     List l = (List)e;
                     if (l.Items.Count == 0) {
                         // On an empty list, return the empty list as a variable
-                        return new Var<T>(l);
+                        return new Exp<T>(l);
                     } else {
                         // Console.WriteLine("Valid combination");
                         // The list contains at least one item
